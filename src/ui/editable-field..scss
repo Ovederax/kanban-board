@@ -1,0 +1,13 @@
+.card-field {
+  display: flex;
+  justify-content: space-between;
+  white-space: pre-wrap;
+  padding: 8px;
+  gap: 8px;
+}
+
+.pencil {
+  min-width: 16px;
+  margin: 8px 4px;
+  cursor: pointer;
+}
