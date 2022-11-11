@@ -1,2 +1,4 @@
 # Description
-Test task from company
+You can see board on web by url:  
+https://ovederax.github.io/kanban-board/
+
