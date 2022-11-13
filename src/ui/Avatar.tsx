@@ -10,8 +10,10 @@ const Avatar = (props: Props) => {
   return (
     <div
       style={{
-        width: 32,
-        height: 32,
+        minWidth: 32,
+        maxWidth: 32,
+        minHeight: 32,
+        maxHeight: 32,
         lineHeight: '32px',
         borderRadius: '100%',
         textAlign: 'center',

@@ -10,8 +10,7 @@ import dashboardService from '../services/DashboardService'
 import { Action, DashboardEntity, CardEntity } from '../services/types'
 import CardEditModal from '../modals/CardEditModal'
 import { useCardEdit } from './hooks/useCardEdit'
-
-const noop = () => {}
+import { noop } from '../utils'
 
 interface DashboardData {
   dashboard: DashboardEntity | null

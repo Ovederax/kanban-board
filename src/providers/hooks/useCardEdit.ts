@@ -1,6 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CardEntity, ColumnEntity, DashboardEntity } from '../../services/types'
 import { useRenewableRef } from '../../hooks/useRenewableRef'
+
+interface CardIds {
+  cardId: number
+  columnId: number
+}
 
 export interface CardData {
   cardEntity?: CardEntity
@@ -10,7 +15,7 @@ export interface CardData {
 export const useCardEdit = (dashboard: DashboardEntity | null) => {
   const dashboardRef = useRenewableRef(dashboard)
   const [showCardEdit, setShowCardEdit] = useState<boolean>(false)
-  const [cardEditData, setCardEditData] = useState<CardData>({})
+  const [ids, setIds] = useState<CardIds>({ cardId: 0, columnId: 0 })
 
   const onCancelEditCard = () => {
     setShowCardEdit(false)
@@ -22,11 +27,28 @@ export const useCardEdit = (dashboard: DashboardEntity | null) => {
     const parentColumnData = currentDashboard?.columns?.find(it => it.id === cardEntity.columnId)
 
     setShowCardEdit(true)
-    setCardEditData({
-      cardEntity,
-      parentColumnData,
+    setIds({
+      cardId: cardEntity.id,
+      columnId: cardEntity.columnId || 0,
     })
   }
+
+  const cardEditData = useMemo<CardData>(() => {
+    if (!dashboard) {
+      return {}
+    }
+    const parentColumnData: ColumnEntity | undefined = dashboard.columns.find(
+      it => it.id === ids.columnId,
+    )
+    const cardEntity: CardEntity | undefined = parentColumnData?.cards?.find(
+      it => it.id === ids.cardId,
+    )
+
+    return {
+      cardEntity,
+      parentColumnData,
+    }
+  }, [dashboard, ids])
 
   return { cardEditData, showCardEdit, onCancelEditCard, startEditCard }
 }

@@ -11,8 +11,10 @@ const toInvestigate: CardEntity[] = [
     description: 'Example of description',
     comments: [
       {
+        id: 0,
         userId: 0,
         text: 'Example of comment',
+        timestamp: '10:10 11/13/2022',
       },
     ],
   },

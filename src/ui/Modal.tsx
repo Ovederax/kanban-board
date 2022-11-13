@@ -16,6 +16,7 @@ interface Props {
   leftActions?: React.ReactNode
   okDisable?: boolean
   onOk: () => void
+  onEscapeKeyDown?: () => void
 }
 
 const Modal = (props: Props) => {
@@ -32,10 +33,17 @@ const Modal = (props: Props) => {
     size,
     fullscreen,
     leftActions,
+    onEscapeKeyDown,
   } = props
 
   return (
-    <BootstrapModal size={size} fullscreen={fullscreen} show={show} onHide={onCancel}>
+    <BootstrapModal
+      size={size}
+      fullscreen={fullscreen}
+      show={show}
+      onHide={onCancel}
+      onEscapeKeyDown={onEscapeKeyDown}
+    >
       <BootstrapModal.Header closeButton={!hideCancel && !!onCancel}>
         <BootstrapModal.Title>{title}</BootstrapModal.Title>
       </BootstrapModal.Header>

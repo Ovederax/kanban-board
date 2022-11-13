@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Action,
-  ActionType,
-  CardEntity,
-  ChangeCardContent,
-  Comment,
-  RemoveCard,
-  User,
-} from '../services/types'
+import { Action, ActionType, ChangeCardContent, Comment, RemoveCard } from '../services/types'
 import Modal from '../ui/Modal'
 import { Button, Form } from 'react-bootstrap'
 import { TaskSvg } from '../svg'
 import { CardData } from '../providers/hooks/useCardEdit'
 import CardComment from './CardComment'
+import Avatar from '../ui/Avatar'
+import { useUser } from '../providers/useUser'
 
 interface Props {
   show: boolean
@@ -25,14 +19,13 @@ const CardEditModal = (props: Props) => {
   const { show, cardEditData, onCancel, onApplyAction } = props
   const { cardEntity, parentColumnData } = cardEditData
 
+  const { user } = useUser()
   const [description, setDescription] = useState(cardEntity?.description || '')
-  const [comments, setComments] = useState<Comment[]>(cardEntity?.comments || [])
   const [newCommentText, setNewCommentText] = useState('')
 
   useEffect(() => {
     if (show) {
       setDescription(cardEntity?.description || '')
-      setComments(cardEntity?.comments || [])
     }
   }, [show])
 
@@ -59,12 +52,17 @@ const CardEditModal = (props: Props) => {
   }
 
   const onAddComment = () => {
-    const newComment: Comment = {
-      userId: 0,
-      text: newCommentText,
+    if (!cardEntity) {
+      return
     }
     setNewCommentText('')
-    setComments([...comments, newComment])
+    onApplyAction({
+      type: ActionType.AddCommentToCard,
+      columnId: cardEntity.columnId,
+      cardId: cardEntity.id,
+      userId: 0,
+      text: newCommentText,
+    })
   }
 
   const onClickOk = () => {
@@ -77,7 +75,7 @@ const CardEditModal = (props: Props) => {
       cardId: cardEntity.id,
       newText: cardEntity.text,
       newDescription: description,
-      newComments: comments,
+      newComments: cardEntity.comments,
     }
     onApplyAction(action)
     onCancel()
@@ -106,6 +104,7 @@ const CardEditModal = (props: Props) => {
       onCancel={onCancel}
       okDisable={false}
       okText="Save"
+      onEscapeKeyDown={onCancel}
       leftActions={
         <Button variant="outline-danger" onClick={removeCard}>
           Remove card
@@ -123,26 +122,39 @@ const CardEditModal = (props: Props) => {
       </Form.Group>
       <div className="d-flex flex-column mb-3 gap-2">
         <Form.Label>Comments:</Form.Label>
-        {comments.length === 0 && <span style={{ color: '#bbb' }}>Ho have comments</span>}
-        {comments.map(it => (
-          // eslint-disable-next-line react/jsx-key
-          <CardComment comment={it} />
+        {cardEntity?.comments.length === 0 && (
+          <span style={{ color: '#bbb' }}>Ho have comments</span>
+        )}
+        {cardEntity?.comments?.map(it => (
+          <CardComment
+            key={it.id}
+            cardId={cardEntity.id}
+            columnId={cardEntity.columnId}
+            comment={it}
+            onApplyAction={onApplyAction}
+          />
         ))}
       </div>
-      <Form.Group className="mb-3">
-        <Form.Label>Add new comment</Form.Label>
-        <div className="d-flex gap-2">
+      <div className="d-flex flex-column gap-2 align-items-start mb-3">
+        <div className="d-flex gap-2 w-100 align-items-center">
+          <Avatar name={user?.name || ''} />
           <Form.Control
             value={newCommentText}
             type="text"
-            placeholder="Enter new comment"
+            placeholder="Enter new comment..."
             onChange={onChangeComment}
           />
-          <Button disabled={newCommentText.trim() === ''} onClick={onAddComment}>
+        </div>
+        {!!newCommentText && (
+          <Button
+            style={{ marginLeft: 40 }}
+            disabled={newCommentText.trim() === ''}
+            onClick={onAddComment}
+          >
             Add
           </Button>
-        </div>
-      </Form.Group>
+        )}
+      </div>
     </Modal>
   )
 }

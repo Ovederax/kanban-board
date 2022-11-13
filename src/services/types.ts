@@ -4,7 +4,9 @@ export type User = {
 }
 
 export type Comment = {
+  id: number
   userId: number
+  timestamp: string
   text: string
 }
 
@@ -33,6 +35,9 @@ export enum ActionType {
   ChangeColumnName,
   ChangeCardContent,
   RemoveCard,
+  AddCommentToCard,
+  ChangeCommentText,
+  RemoveComment,
 }
 
 export interface ChangeCardText {
@@ -68,4 +73,35 @@ export interface RemoveCard {
   cardId: number
 }
 
-export type Action = ChangeCardText | AddNewCard | ChangeColumnName | ChangeCardContent | RemoveCard
+export interface AddCommentToCard {
+  type: ActionType.AddCommentToCard
+  columnId: number
+  cardId: number
+  userId: number
+  text: string
+}
+
+export interface ChangeCommentText {
+  type: ActionType.ChangeCommentText
+  columnId: number
+  cardId: number
+  commentId: number
+  text: string
+}
+
+export interface RemoveComment {
+  type: ActionType.RemoveComment
+  columnId: number
+  cardId: number
+  commentId: number
+}
+
+export type Action =
+  | ChangeCardText
+  | AddNewCard
+  | ChangeColumnName
+  | ChangeCardContent
+  | RemoveCard
+  | AddCommentToCard
+  | ChangeCommentText
+  | RemoveComment
